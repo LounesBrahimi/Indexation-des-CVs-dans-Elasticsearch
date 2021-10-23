@@ -38,16 +38,20 @@ public class CVController {
 
     @PostMapping
     public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+
         try {
             cvService.save(file);
         } catch (IOException e) {
-            HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
             map.put("message", "Uploading failed");
             return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException e) {
+            map.put("status", HttpStatus.BAD_REQUEST.value());
+            map.put("message", "Invalid file type");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
 
-        HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("status", HttpStatus.OK.value());
         map.put("message", "Uploaded successfully");
         return new ResponseEntity<>(map, HttpStatus.CREATED);

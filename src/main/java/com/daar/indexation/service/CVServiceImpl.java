@@ -18,12 +18,12 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Base64;
 import java.util.HashMap;
-
 import com.daar.indexation.model.CV;
 import com.daar.indexation.repository.CVRepository;
 
 @Service
 public class CVServiceImpl implements CVService {
+    private static final String[] VALID_FILES_EXTENSION = {"pdf", "doc", "docx"};
     private static final String INDEX_NAME = "cv";
     private static final String FOLDER_PATH = "cv";
     private final Path rootPath = Paths.get(FOLDER_PATH);
@@ -47,18 +47,24 @@ public class CVServiceImpl implements CVService {
     }
 
     @Override
-    public void save(MultipartFile file) throws IOException {
-        Path destinationFile = this.rootPath.resolve(Paths.get(file.getOriginalFilename()))
+    public void save(MultipartFile file) throws IOException, IllegalArgumentException {
+        String encoded = new String(Base64.getEncoder().encodeToString(file.getBytes()));
+        CV cv = new CV(encoded);
+
+        String extension = getFileExtension(file.getOriginalFilename());
+
+        if (!isValidFileExtension(extension)) {
+            throw new IllegalArgumentException("Invalid extension: " + extension);
+        }
+
+        Path destinationFile = this.rootPath.resolve(Paths.get(cv.getId() + "." + extension))
                 .normalize().toAbsolutePath();
+
+        cv.setPath(destinationFile.toString());
 
         try (InputStream inputStream = file.getInputStream()) {
             Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
         }
-
-        String encoded = new String(Base64.getEncoder().encodeToString(file.getBytes()));
-
-        CV cv = new CV(encoded);
-        cv.setPath(destinationFile.toString());
 
         indexing(cv);
     }
@@ -74,5 +80,24 @@ public class CVServiceImpl implements CVService {
                 .source(content);
 
         highLevelClient.index(request, RequestOptions.DEFAULT);
+    }
+
+    private static String getFileExtension(String filename) {
+        int i = filename.lastIndexOf('.');
+        if (i > 0) {
+            return filename.substring(i + 1);
+        }
+
+        return "";
+    }
+
+    private static boolean isValidFileExtension(String extension) {
+        for (String ext : VALID_FILES_EXTENSION) {
+            if (ext.equals(extension)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
