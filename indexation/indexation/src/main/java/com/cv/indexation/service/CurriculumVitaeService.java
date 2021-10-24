@@ -1,10 +1,11 @@
 package com.cv.indexation.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import com.cv.indexation.document.CurriculumVitae;
+import com.cv.indexation.helper.Indices;
+import com.cv.indexation.search.SearchRequestDTO;
+import com.cv.indexation.search.util.SearchUtil;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -21,11 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cv.indexation.document.CurriculumVitae;
-import com.cv.indexation.helper.Indices;
-import com.cv.indexation.search.SearchRequestDTO;
-import com.cv.indexation.search.util.SearchUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class CurriculumVitaeService {
@@ -39,6 +39,13 @@ public class CurriculumVitaeService {
         this.client = client;
     }
 
+    /**
+     * Used to search for vehicles based on data provided in the {@link SearchRequestDTO} DTO. For more info take a look
+     * at DTO javadoc.
+     *
+     * @param dto DTO containing info about what to search for.
+     * @return Returns a list of found vehicles.
+     */
     public List<CurriculumVitae> search(final SearchRequestDTO dto) {
         final SearchRequest request = SearchUtil.buildSearchRequest(
                 Indices.CV_INDEX,
@@ -47,12 +54,19 @@ public class CurriculumVitaeService {
         return searchInternal(request);
     }
 
-    public List<CurriculumVitae> getAllCurriculumVitaesCreatedSince(final Date date) {
+    /**
+     * Used to get all vehicles that have been created since forwarded date.
+     *
+     * @param date Date that is forwarded to the search.
+     * @return Returns all vehicles created since forwarded date.
+     */
+    public List<CurriculumVitae> getAllVehiclesCreatedSince(final Date date) {
         final SearchRequest request = SearchUtil.buildSearchRequest(
                 Indices.CV_INDEX,
                 "created",
                 date
         );
+
         return searchInternal(request);
     }
 
@@ -70,29 +84,30 @@ public class CurriculumVitaeService {
             LOG.error("Failed to build search request");
             return Collections.emptyList();
         }
+
         try {
             final SearchResponse response = client.search(request, RequestOptions.DEFAULT);
 
             final SearchHit[] searchHits = response.getHits().getHits();
-            final List<CurriculumVitae> curriculumVitaes = new ArrayList<>(searchHits.length);
+            final List<CurriculumVitae> cv = new ArrayList<>(searchHits.length);
             for (SearchHit hit : searchHits) {
-            	curriculumVitaes.add(
+                cv.add(
                         MAPPER.readValue(hit.getSourceAsString(), CurriculumVitae.class)
                 );
             }
-            return curriculumVitaes;
+            return cv;
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             return Collections.emptyList();
         }
     }
 
-    public Boolean index(final CurriculumVitae curriculumVitae) {
+    public Boolean index(final CurriculumVitae cv) {
         try {
-            final String cvAsString = MAPPER.writeValueAsString(curriculumVitae);
+            final String cvAsString = MAPPER.writeValueAsString(cv);
 
             final IndexRequest request = new IndexRequest(Indices.CV_INDEX);
-            request.id(curriculumVitae.getId());
+            request.id(cv.getId());
             request.source(cvAsString, XContentType.JSON);
 
             final IndexResponse response = client.index(request, RequestOptions.DEFAULT);
@@ -113,6 +128,7 @@ public class CurriculumVitaeService {
             if (documentFields == null || documentFields.isSourceEmpty()) {
                 return null;
             }
+
             return MAPPER.readValue(documentFields.getSourceAsString(), CurriculumVitae.class);
         } catch (final Exception e) {
             LOG.error(e.getMessage(), e);

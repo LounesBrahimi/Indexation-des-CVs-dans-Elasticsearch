@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.cv.indexation.document.CurriculumVitae;
 import com.cv.indexation.service.CurriculumVitaeService;
-import com.cv.indexation.service.helper.CurriculumVitaeDummyDataService;
 import com.cv.indexation.search.SearchRequestDTO;
 
 
@@ -17,23 +16,16 @@ import com.cv.indexation.search.SearchRequestDTO;
 @RequestMapping("/api/cv")
 public class CurriculumVitaeController {
     private final CurriculumVitaeService service;
-    private final CurriculumVitaeDummyDataService dummyDataService;
-
+    
     @Autowired
-    public CurriculumVitaeController(CurriculumVitaeService service, CurriculumVitaeDummyDataService dummyDataService) {
+    public CurriculumVitaeController(CurriculumVitaeService service) {
         this.service = service;
-        this.dummyDataService = dummyDataService;
     }
 
     @PostMapping
     public void index(@RequestBody final CurriculumVitae curriculumVitae) {
         service.index(curriculumVitae);
     }
-
- //   @PostMapping("/insertdummydata")
- //   public void insertDummyData() {
-  //      dummyDataService.insertDummyData();
-  //  }
 
     @GetMapping("/{id}")
     public CurriculumVitae getById(@PathVariable final String id) {
@@ -45,12 +37,4 @@ public class CurriculumVitaeController {
         return service.search(dto);
     }
 
-    @PostMapping("/searchcreatedsince/{date}")
-    public List<CurriculumVitae> searchCreatedSince(
-            @RequestBody final SearchRequestDTO dto,
-            @PathVariable
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
-            final Date date) {
-        return service.searchCreatedSince(dto, date);
-    }
 }
