@@ -74,7 +74,7 @@ public class IndexService {
     }
 
     private String loadMappings(String indexName) {
-        final String mappings = Util.loadAsString("static/mappings/" + indexName + ".json");
+        final String mappings = Util.loadAsString("static/mappings/cv.json");
         if (mappings == null) {
             LOG.error("Failed to load mappings for index with name '{}'", indexName);
             return null;
