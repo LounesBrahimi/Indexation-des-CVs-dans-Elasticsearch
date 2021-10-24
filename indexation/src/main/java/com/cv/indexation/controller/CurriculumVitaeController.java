@@ -34,6 +34,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+import java.util.Base64;
+
 @RestController
 @RequestMapping("/api/cv")
 public class CurriculumVitaeController {
@@ -86,9 +89,10 @@ public class CurriculumVitaeController {
     //save file
     private void indexFile(List<MultipartFile> files) throws IOException {
     	CurriculumVitae curriculumVitae = new CurriculumVitae();
-    	curriculumVitae.setContent("bonjour");
+        String encoded = new String(Base64.getEncoder().encodeToString(files.get(0).getBytes()));
+        //byte[] contentInBytes = Base64.getDecoder().decode(encoded);
+    //	curriculumVitae.setContent(new String(contentInBytes, "UTF-8"));
+    	curriculumVitae.setContent(new String(encoded));
     	service.index(curriculumVitae);
     }
-    
-
 }

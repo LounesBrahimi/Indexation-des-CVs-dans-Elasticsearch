@@ -96,11 +96,12 @@ public class CurriculumVitaeService {
             final String cvAsString = MAPPER.writeValueAsString(cv);
 
             final IndexRequest request = new IndexRequest(Indices.CV_INDEX);
-            request.id(cv.getId());
+            
+          //  request.id(cv.getId());
             request.source(cvAsString, XContentType.JSON);
 
             final IndexResponse response = client.index(request, RequestOptions.DEFAULT);
-
+            
             return response != null && response.status().equals(RestStatus.OK);
         } catch (final Exception e) {
             LOG.error(e.getMessage(), e);
@@ -108,7 +109,6 @@ public class CurriculumVitaeService {
         }
     }
     
-
     public CurriculumVitae getById(final String cvId) {
         try {
             final GetResponse documentFields = client.get(
