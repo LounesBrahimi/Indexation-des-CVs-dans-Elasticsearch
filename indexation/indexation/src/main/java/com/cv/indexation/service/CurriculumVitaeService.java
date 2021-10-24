@@ -47,7 +47,7 @@ public class CurriculumVitaeService {
         return searchInternal(request);
     }
 
-    public List<CurriculumVitae> getAllVehiclesCreatedSince(final Date date) {
+    public List<CurriculumVitae> getAllCurriculumVitaesCreatedSince(final Date date) {
         final SearchRequest request = SearchUtil.buildSearchRequest(
                 Indices.CV_INDEX,
                 "created",
