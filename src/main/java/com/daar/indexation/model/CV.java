@@ -1,6 +1,7 @@
 package com.daar.indexation.model;
 
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -9,17 +10,25 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "cv", createIndex = true)
 public class CV {
     @Id
-    private final String id;
+    @JsonIgnore
+    private String id;
 
     @Field(type = FieldType.Text, name = "path")
+    @JsonIgnore
     private String path;
 
     @Field(type = FieldType.Text, name = "data")
+    @JsonIgnore
     private String data;
 
-    public CV(String contentString) {
+    @Field(type = FieldType.Text, name = "attachment.content")
+    private String content;
+
+    public CV() { }
+
+    public CV(String content) {
         this.id = UUID.randomUUID().toString();
-        this.data = contentString;
+        this.data = content;
     }
 
     public String getId() {
@@ -40,5 +49,9 @@ public class CV {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    public String getContent() {
+        return content;
     }
 }

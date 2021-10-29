@@ -10,6 +10,6 @@ import com.daar.indexation.model.CV;
 
 @Repository
 public interface CVRepository extends ElasticsearchRepository<CV, String> {
-    @Query("{\"bool\": {\"must\": [{\"fuzzy\": {\"title\": \"?0\"}}]}}")
+    @Query("{\"match\": {\"attachment.content\": \"?0\"}}")
     List<CV> search(String keyword);
 }
