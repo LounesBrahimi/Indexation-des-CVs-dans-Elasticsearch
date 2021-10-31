@@ -10,15 +10,12 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "cv", createIndex = true)
 public class CV {
     @Id
-    @JsonIgnore
     private String id;
 
     @Field(type = FieldType.Text, name = "path")
-    @JsonIgnore
     private String path;
 
     @Field(type = FieldType.Text, name = "data")
-    @JsonIgnore
     private String data;
 
     @Field(type = FieldType.Text, name = "attachment.content")

@@ -2,6 +2,9 @@ package com.daar.indexation.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -23,6 +26,8 @@ import com.daar.indexation.repository.CVRepository;
 
 @Service
 public class CVServiceImpl implements CVService {
+    private static final Logger log = LoggerFactory.getLogger(CVServiceImpl.class);
+
     private static final String[] VALID_FILES_EXTENSION = {"pdf", "doc", "docx"};
     private static final String INDEX_NAME = "cv";
     private static final String FOLDER_PATH = "cv";
@@ -42,6 +47,7 @@ public class CVServiceImpl implements CVService {
         try {
             Files.createDirectories(rootPath);
         } catch (IOException e) {
+            log.error("CV Service - initialization error - ", e.getMessage());
             throw new RuntimeException("Could not initialize storage", e);
         }
     }
@@ -54,6 +60,7 @@ public class CVServiceImpl implements CVService {
         String extension = getFileExtension(file.getOriginalFilename());
 
         if (!isValidFileExtension(extension)) {
+            log.error("Save CV - Bad extension - " + extension);
             throw new IllegalArgumentException("Invalid extension: " + extension);
         }
 

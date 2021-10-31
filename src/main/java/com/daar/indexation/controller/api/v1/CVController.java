@@ -1,5 +1,8 @@
 package com.daar.indexation.controller.api.v1;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +23,15 @@ import com.daar.indexation.service.CVService;
 @RestController
 @RequestMapping("/api/v1/cv")
 public class CVController {
+    private static final Logger log = LoggerFactory.getLogger(CVController.class);
 
     @Autowired
     private CVService cvService;
 
     @GetMapping
     public ResponseEntity<Object> search(@RequestParam("keyword") String keyword) {
+        log.info("GET /api/v1/cv/search - keyword: " + keyword);
+
         List<CV> results = cvService.search(keyword);
 
         HashMap<String, Object> map = new HashMap<String, Object>();
@@ -38,6 +44,8 @@ public class CVController {
 
     @PostMapping
     public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file) {
+        log.info("POST /api/v1/cv/upload - file: " + file.getOriginalFilename());
+
         HashMap<String, Object> map = new HashMap<String, Object>();
 
         try {
