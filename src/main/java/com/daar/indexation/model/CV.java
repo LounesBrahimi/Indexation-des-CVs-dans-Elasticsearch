@@ -1,7 +1,7 @@
 package com.daar.indexation.model;
 
 import java.util.UUID;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -10,12 +10,15 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "cv", createIndex = true)
 public class CV {
     @Id
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String id;
 
     @Field(type = FieldType.Text, name = "path")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String path;
 
     @Field(type = FieldType.Text, name = "data")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String data;
 
     @Field(type = FieldType.Text, name = "attachment.content")
