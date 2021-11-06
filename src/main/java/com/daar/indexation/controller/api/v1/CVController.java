@@ -17,7 +17,7 @@ import java.util.List;
 import java.io.IOException;
 import java.util.HashMap;
 
-import com.daar.indexation.model.CV;
+import com.daar.indexation.model.CVResult;
 import com.daar.indexation.service.CVService;
 
 @RestController
@@ -32,7 +32,7 @@ public class CVController {
     public ResponseEntity<Object> search(@RequestParam("keyword") String keyword) {
         log.info("GET /api/v1/cv/search - keyword: " + keyword);
 
-        List<CV> results = cvService.search(keyword);
+        List<CVResult> results = cvService.search(keyword);
 
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("status", HttpStatus.OK.value());

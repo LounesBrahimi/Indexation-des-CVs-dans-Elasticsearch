@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Base64;
 import java.util.HashMap;
 import com.daar.indexation.model.CV;
+import com.daar.indexation.model.CVResult;
 import com.daar.indexation.repository.CVRepository;
 
 @Service
@@ -76,7 +77,7 @@ public class CVServiceImpl implements CVService {
         indexing(cv);
     }
 
-    public List<CV> search(String keyword) {
+    public List<CVResult> search(String keyword) {
         return cvRepository.search(keyword);
     }
 

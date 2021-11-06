@@ -6,10 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import com.daar.indexation.model.CV;
+import com.daar.indexation.model.CVResult;
 
 @Repository
-public interface CVRepository extends ElasticsearchRepository<CV, String> {
+public interface CVRepository extends ElasticsearchRepository<CVResult, String> {
     @Query("{\"match\": {\"attachment.content\": \"?0\"}}")
-    List<CV> search(String keyword);
+    List<CVResult> search(String keyword);
 }
