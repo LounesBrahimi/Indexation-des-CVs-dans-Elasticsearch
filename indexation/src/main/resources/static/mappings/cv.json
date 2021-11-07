@@ -1,5 +1,8 @@
 {
   "properties" : {
+    "nameFile": {
+      "type": "text"
+    },
     "content": {
       "type": "text"
     }
